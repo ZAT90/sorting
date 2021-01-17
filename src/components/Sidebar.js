@@ -19,19 +19,19 @@ class SideNav extends React.Component {
             items: [
                 {
                     path: '/', /* path is used as id to check which NavItem is active basically */
-                    name: 'Home',
+                    name: 'Bubble',
                     css: 'fa fa-fw fa-home',
                     key: 1 /* Key is required, else console throws error. Does this please you Mr. Browser?! */
                 },
                 {
-                    path: '/about',
-                    name: 'About',
+                    path: '/count',
+                    name: 'Count',
                     css: 'fa fa-fw fa-clock',
                     key: 2
                 },
                 {
-                    path: '/NoMatch',
-                    name: 'NoMatch',
+                    path: '/merge',
+                    name: 'Merge',
                     css: 'fas fa-hashtag',
                     key: 3
                 },

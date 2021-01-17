@@ -8,10 +8,12 @@ const GridWrapper = styled.div`
   margin-right: 6em;
   grid-template-columns: repeat(12, 1fr);
   grid-auto-rows: minmax(25px, auto);
-`;
-export const Home = (props) => (
+`; 
+export const Count = () => (
   <GridWrapper>
-    <p>This is a paragraph and I am writing on the home page</p>
-    <p>This is another paragraph, hi hey hello whatsup yo</p>
+    <h2>About Page</h2>
+    <p>State at ceiling lay on arms while you're using the keyboard so this human feeds me.</p>
+    <p>I am a kitty cat, sup, feed me, no cares in the world</p>
+    <p>Meow meow, I tell my human purr for no reason but to chase after</p>
   </GridWrapper>
 )

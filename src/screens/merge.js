@@ -5,8 +5,8 @@ const Wrapper = styled.div`
   margin-left: 6em;
   margin-right: 6em;
 `;
-export const NoMatch = () => (
+export const Merge = () => (
   <Wrapper>
-    <h2>No Match</h2>
+    <h2>This is for merge sort</h2>
   </Wrapper>
 )
