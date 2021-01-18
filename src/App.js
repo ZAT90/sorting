@@ -7,13 +7,13 @@ import { NavigationBar } from './components/NavigationBar';
 import { Bubble } from './screens/bubble';
 import { Count } from './screens/count';
 import { Merge } from './screens/merge';
-import Sidebar from './components/Sidebar';
- 
+import { Sidebar } from './components/Sidebar';
+
 function App() {
   return (
     <React.Fragment>
       <Router>
-        <NavigationBar />
+        
         <Sidebar />
         <Switch>
           <Route exact path="/" component={Bubble} />

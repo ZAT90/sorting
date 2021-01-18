@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Nav, Navbar, Form, FormControl } from 'react-bootstrap';
 import styled from 'styled-components';
+import Switch from "react-switch";
 const Styles = styled.div`
   .navbar { background-color: #222; }
   a, .navbar-nav, .navbar-light .nav-link {
@@ -18,20 +19,39 @@ const Styles = styled.div`
     right: 25%;
   }
 `;
-export const NavigationBar = () => (
-  <Styles>
-    <Navbar expand="lg">
-      <Navbar.Brand href="/">Tutorial</Navbar.Brand>
-      {/* <Navbar.Toggle aria-controls="basic-navbar-nav"/> */}
-      <Form className="form-center">
-        {/* <FormControl type="text" className="" /> */}
-      </Form>
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto">
-          <Nav.Item><Nav.Link href="/">Home</Nav.Link></Nav.Item> 
-          <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
-  </Styles>
-)
+export function NavigationBar({showConsole}) {
+  const [checked, setChecked] = useState(false);
+
+  // const handleChange =()=> {
+  //   setChecked(!checked);
+  // }
+  function handleChange() {
+    setChecked(!checked);
+    console.log('checked: '+checked);
+    showConsole(!checked);
+  }
+  return (
+    <Styles>
+      <Navbar className="mr-auto" expand="lg">
+        {/* <Navbar.Brand href="/">Tutorial</Navbar.Brand> */}
+        {/* <Navbar.Toggle aria-controls="basic-navbar-nav"/> */}
+        <label>
+          <span style={{ color: 'white', marginRight: 20 }}>{checked ? 'Turn off console' : 'Turn on console'}</span>
+          <Switch
+            onChange={() => handleChange()}
+            checked={checked} />
+        </label>
+        {/* <Form className="form-center">
+         
+        </Form> */}
+        {/* <Navbar.Brand id="basic-navbar-nav">
+         
+        </Navbar.Brand> */}
+      </Navbar>
+    </Styles>
+  )
+
+}
+// export const NavigationBar = () => (
+
+// )
