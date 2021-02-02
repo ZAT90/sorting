@@ -22,12 +22,12 @@ const styles = {
   consoleDiv: { display: 'flex', flex: 0.4, backgroundColor: 'grey', flexDirection: 'column' },
   consoleDiv2: { display: 'flex', flexDirection: 'column' },
   consoleHeader: { fontWeight: 'bold', fontSize: 20, textDecorationLine: 'underline' },
-  nestedForDiv: { display: 'flex', flexDirection: 'row', marginLeft: 10, marginTop: 50 },
-  nestedForConsole: { display: 'flex', flex: 0.3, backgroundColor: 'black', justifyContent: 'center', color: 'white', flexDirection: 'column', paddingLeft: 10 },
-  nestedForText: { display: 'flex', flex: 0.7, marginLeft: 10, alignItems: 'center', },
+  nestedForDiv: { display: 'flex', flexDirection: 'row', marginLeft: 10, marginTop: 20 },
+  nestedForConsole: { display: 'flex', flex: 0.5, backgroundColor: 'black', justifyContent: 'center', color: 'white',  },
+  nestedForText: { display: 'flex', flex: 0.5, marginLeft: 10, alignItems: 'center', },
   ifDiv: { display: 'flex', flexDirection: 'row', marginLeft: 10, marginBottom: 30 },
-  ifConsole: { display: 'flex', flex: 0.3, backgroundColor: 'red', justifyContent: 'center', color: 'white' },
-  ifText: { display: 'flex', flex: 0.7, marginLeft: 10 },
+  ifConsole: { display: 'flex', flex: 0.5, backgroundColor: 'red', justifyContent: 'center', color: 'white' },
+  ifText: { display: 'flex', flex: 0.5, marginLeft: 10 },
 }
 
 export function Bubble() {
@@ -76,21 +76,6 @@ export function Bubble() {
     }
   }
 
-  function showModal(title, body) {
-    return (
-      <Modal show={show}>
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{body}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            OK
-    </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
 
   function chooseItems() {
     return (
@@ -120,14 +105,7 @@ export function Bubble() {
     setChooseNums(randomArrayRedo);
     setInitList(randomArrayRedo);
   }
-  function generateFirstList(gameLevel) {
-    console.log('gamelevel: ' + gameLevel);
-    setIsLevel(true);
-    const randomArray = Array.from({ length: 30 }, () => Math.floor(Math.random() * 40));
-    setFirstList(randomArray);
-    //  setInitList(randomArray);
-    //  setNumToCompare(randomArray.length);
-  }
+
   function highlightOperation(increment) {
     console.log('highlightSecond: ' + highlightSecond);
     console.log('numToCompare: ' + numToCompare);
@@ -173,18 +151,7 @@ export function Bubble() {
       highlightOperation(false);
     }
   }
-  function reStart() {
-    setIsLevel(false);
-    setFirstList([]);
-    setScore(0);
-    setNumToCompare(0);
-    setHighlightFirst(0);
-    setHighlightSecond(1);
-    setShow(false);
-    setLevelName('');
-    setIsFirstListSet(false);
-    setChooseNums([]);
-  }
+
   function startSorting() {
     if (levelName === 'easy') {
       if (firstList.length < 6) {
@@ -248,7 +215,7 @@ export function Bubble() {
           </div>}
           {numToCompare === 1 &&
             <div><h2 style={styles.completeMsg}>Well done! You have completed the game</h2>
-              <Button onClick={() => reStart()} style={styles.newGameBtn} >Start new Game</Button>
+              <Button onClick={() => window.location.reload()} style={styles.newGameBtn} >Start new Game</Button>
             </div>
           }
           <Modal show={show}>
@@ -277,39 +244,43 @@ export function Bubble() {
           {isFirstListSet && firstList.length - numToCompare > 0 && <span style={{ marginLeft: 10 }}>size = len(array)</span>}
         </div>
         {isFirstListSet && firstList.length - numToCompare > 0 && <div style={styles.nestedForDiv}>
+        <div style={styles.nestedForText}>for step in range of (0, size - 1) :
+        </div>
           <div style={styles.nestedForConsole}>
 
             step -&gt; 0....{firstList.length}-1
           <br />
             <span style={{ marginLeft: 10 }}>
-              {returnNestedRange(firstList.length).map((item, i, arr) => <span style={{ color: firstList.length - numToCompare === i ? 'yellow' : 'white' }}>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{returnNestedRange(firstList.length).map((item, i, arr) => <span style={{ color: firstList.length - numToCompare === i ? 'yellow' : 'white' }}>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
             </span>
           </div>
 
-          <div style={styles.nestedForText}>for step in range of (0, size - 1) :
-        </div>
+          
         </div>}
         {!isFirstListSet ?
           <div /> :
           firstList.length - numToCompare === 0 && highlightFirst === 0 ?
             <div /> :
             <div style={styles.nestedForDiv}>
+
+              <div style={styles.nestedForText}>&nbsp;&nbsp;&nbsp;for j in range of (0, size - step - 1) :
+              
+              </div>
               <div style={styles.nestedForConsole}>
 
-                j --&gt; 0....{firstList.length}-{firstList.length - numToCompare}-1
-          <br />
-                <span style={{ marginLeft: 10 }}>
-                  {returnNestedRange(numToCompare).map((item, i, arr) => <span>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
-                </span>
-              </div>
-              <div style={styles.nestedForText}>for j in range of (0, size - step - 1) :
-        </div>
+                  j --&gt; 0....{firstList.length}-{firstList.length - numToCompare}-1
+               <br />
+                  <span style={{ marginLeft: 50 }}>
+                    {returnNestedRange(numToCompare).map((item, i, arr) => <span style={{ color: highlightFirst === i ? 'red' : 'white' }}>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
+                  </span>
+                </div>
             </div>}
         {isFirstListSet && <div style={styles.ifDiv}>
-          <div style={styles.ifConsole}>j ={highlightFirst}<br />{returnString()}</div>
-          <div style={styles.ifText}>if array[j] &gt; array [j+1] :<br />
-        array[j],array[j+1] = array[j+1],array[j]
+
+          <div style={styles.ifText}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if array[j] &gt; array [j+1] :<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array[j],array[j+1] = array[j+1],array[j]
         </div>
+          <div style={styles.ifConsole}>j ={highlightFirst}<br />{returnString()}</div>
         </div>}
       </div>
     )
