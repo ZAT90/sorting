@@ -15,7 +15,9 @@ const styles = {
   consoleDiv2: { display: 'flex', flexDirection: 'column' },
   consoleHeader: { fontWeight: 'bold', fontSize: 20, textDecorationLine: 'underline' },
   nestedForDiv: { display: 'flex', flexDirection: 'row', marginLeft: 10, marginTop: 10 },
+  firstForConsole: { display: 'flex', flex: 0.5, backgroundColor: '#cdcdcd', justifyContent: 'center', color: 'black', flexDirection: 'row', paddingLeft: 10 },
   nestedForConsole: { display: 'flex', flex: 0.5, backgroundColor: '#cdcdcd', justifyContent: 'center', color: 'black', flexDirection: 'column', paddingLeft: 10 },
+  finalArrayConsole: { display: 'flex', flex: 0.5, backgroundColor: 'turquoise', justifyContent: 'center', color: 'black', flexDirection: 'column', paddingLeft: 10 },
   nestedForText: { display: 'flex', flex: 0.5, marginLeft: 10, alignItems: 'center', },
   functionDiv: { display: 'flex', flexDirection: 'row', marginLeft: 10, marginTop: 30 },
   functionText: { display: 'flex', flex: 0.5, alignItems: 'center', },
@@ -55,6 +57,7 @@ export function Count() {
   const [countArray, setCountArray] = useState([]);
   const [finalArray, setFinalArray] = useState([]);
   const [countDone, setCountDone] = useState(false);
+  const [finalDone,setFinalDone] = useState(false);
 
   function generateChooseList(level) {
     //console.log('gamelevel: ' + gameLevel);
@@ -104,7 +107,7 @@ export function Count() {
       setObjList(removeList);
     } else {
       if (levelName === 'easy') {
-        if (firstList.length < 6) {
+        if (objList.length < 6) {
           setObjList(prevArray => [...prevArray, { index, number }])
 
         } else {
@@ -112,13 +115,13 @@ export function Count() {
 
         }
       } else if (levelName === 'medium') {
-        if (firstList.length < 8) {
+        if (objList.length < 8) {
           setObjList(prevArray => [...prevArray, { index, number }])
         } else {
           alert("medium level can only select 8 numbers");
         }
       } else if (levelName === 'hard') {
-        if (firstList.length < 10) {
+        if (objList.length < 10) {
           setObjList(prevArray => [...prevArray, { index, number }])
         } else {
           alert("hard level can only select 10 numbers");
@@ -196,6 +199,8 @@ export function Count() {
   };
   // objList.map((item, i) => console.log('item: ' + item.number));
   console.log('finalArray: ' + finalArray);
+  console.log('countArray: '+countArray);
+  console.log('cthighlight: '+ctHighlight)
   //console.log('object list: '+objList.index);
   return (
     <div>
@@ -235,7 +240,7 @@ export function Count() {
                         style={
                           {
                             display: 'flex',
-                            backgroundColor: highlight === firstList.length && i === ctHighlight ? 'red' : '#cdcdcd',
+                            backgroundColor: countDone && i === ctHighlight ? 'red' : '#cdcdcd',
                             color: highlight === firstList.length && i === ctHighlight ? 'white' : 'black',
                             width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center'
                           }
@@ -249,9 +254,9 @@ export function Count() {
 
 
                 </GridWrapper>
-                {finalArray.length > 0 && countDone ?
+                {finalArray.length > 0 && !countDone ?
                   <div /> :
-                  countDone && <div style={styles.swapDiv}>
+                  countDone && ctHighlight < countArray.length && !finalDone && <div style={styles.swapDiv}>
                     <Button onClick={() => { ignore() }} style={styles.swapBtn} >Ignore</Button>
                   &nbsp;&nbsp;&nbsp;
                   <Button onClick={() => { addCount() }} style={styles.swapBtn} >Add</Button>
@@ -266,7 +271,7 @@ export function Count() {
             {finalItems()}
 
           </GridWrapper>}
-          {finalArray.length > 0 && ctHighlight === countArray.length &&
+          {finalArray.length > 0 && finalDone &&
             <div><h2 style={styles.completeMsg}>Well done! You have completed the game</h2>
               <Button onClick={() => window.location.reload()} style={styles.newGameBtn} >Start new Game</Button>
             </div>
@@ -292,7 +297,12 @@ export function Count() {
   function ignore() {
     console.log(countArray[ctHighlight]);
     if (countArray[ctHighlight].count == 0) {
-      setCtHighlight(ctHighlight + 1);
+      if(ctHighlight+1 < countArray.length){
+        setCtHighlight(ctHighlight + 1);
+      }else{
+        setFinalDone(true);
+      }
+      
       setScore(score + 1);
     } else {
       setScore(score - 1);
@@ -307,7 +317,11 @@ export function Count() {
         console.log('check the loop: ' + countArray[ctHighlight].count);
         setFinalArray(prevArray => [...prevArray, countArray[ctHighlight].index]);
       }
-      setCtHighlight(ctHighlight + 1);
+      if(ctHighlight+1 < countArray.length){
+        setCtHighlight(ctHighlight + 1);
+      }else{
+        setFinalDone(true);
+      }
       setScore(score + 1);
     } else {
       setScore(score - 1);
@@ -349,6 +363,8 @@ export function Count() {
     setOpenDialog(!openDialog);
   }
 
+  
+
   function consoleView() {
     let ctIndex = firstList[highlight];
     console.log('ctIndex: '+ctIndex);
@@ -357,9 +373,11 @@ export function Count() {
       <div style={styles.consoleDiv}>
         <div style={styles.consoleDiv2}>
           <span style={styles.consoleHeader}>Console</span>
+          
           <span style={{ marginLeft: 10 }}>data = [ {firstList.map((item, i, arr) => <span>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}]</span>
           <span style={{ marginLeft: 10 }}>def countingSort(listToSort, max):</span>
           {isHighest && <span style={{ marginLeft: 10 }}> &nbsp;&nbsp;&nbsp;size = len(listToSort)</span>}
+          {countDone && <span style={{ marginLeft: 10 }}> &nbsp;&nbsp;&nbsp;finalArray = []</span>}
           {isHighest && <div style={styles.nestedForDiv}>
 
           <div style={styles.nestedForText}>count = [0] * (max + 1)
@@ -369,31 +387,40 @@ export function Count() {
             count = [0] * {countArray.length}
           </div>
         </div>}
-        {isHighest && highlight > 0 && <div style={styles.nestedForDiv}>
-        <div style={styles.nestedForText}>for i in range of (0, size) :
-        </div>
-          <div style={styles.nestedForConsole}>
+           {isHighest && <div style={styles.nestedForDiv}>
 
-            i -&gt; 0....{firstList.length}
-          <br />
-            <span style={{ marginLeft: 10 }}>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{returnNestedRange(firstList.length).map((item, i, arr) => <span style={{ color: highlight === i ? '#228B22' : 'black' }}>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
+<div style={styles.nestedForText}>
+{highlight > 0?'for i in range(0, size):':''} <br/>
+&nbsp;&nbsp;&nbsp; count[ listToSort [i] ] = count[listToSort [i] ] + 1
+
+</div>
+<div style={styles.nestedForConsole}>
+ {highlight > 0 && <div>
+i -&gt; <span style={{ marginLeft: 10 }}>
+            {returnNestedRange(firstList.length).map((item, i, arr) => <span style={{ color: highlight === i ? '#228B22' : 'black' }}>{item} {i != (arr.length - 1) ? ',' : ''}</span>)}
             </span>
-          </div>
+  </div>}
+   i = {highlight}<br/>
+   listToSort [{highlight}] = {firstList[highlight]}<br/>
+   count[{firstList[highlight]}] = {countArray[ctIndex].count}  {countDone?'':'+ 1'}
+   </div>
+ </div>}
+ {countDone && <div style={styles.nestedForDiv}>
 
-          
-        </div>}
-        {isHighest && <div style={styles.nestedForDiv}>
+<div style={styles.nestedForText}>
+{ctHighlight > 0?'for x in range(0, count):':''} <br/>        
+if count[x] &gt; 0: <br/>
+&nbsp;&nbsp;for j in range(count[x]):
+&nbsp;&nbsp;&nbsp;finalArray.append(x)
 
-          <div style={styles.nestedForText}>count[ listToSort [i] ] = count[listToSort [i] ] + 1
-
-          </div>
-          <div style={styles.nestedForConsole}>
-             i = {highlight}<br/>
-             listToSort [{highlight}] = {firstList[highlight]}<br/>
-             count[{firstList[highlight]}] = {countArray[ctIndex].count}  {countDone?'':'+ 1'}
-             </div>
-           </div>}
+</div>
+<div style={styles.finalArrayConsole}>
+  
+   x = {ctHighlight}<br/>
+   count [{ctHighlight}] = {countArray[ctHighlight].count}<br/>
+   {`finalArray = [${finalArray}]`}
+   </div>
+ </div>}
           {isFirstListSet && <div style={styles.functionDiv}>
           
 
