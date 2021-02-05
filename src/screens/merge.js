@@ -45,8 +45,7 @@ export function Merge() {
   const [levelName, setLevelName] = useState('');
   const [isFirstListSet, setIsFirstListSet] = useState(false);
   const [breakDialog, setBreakDialog] = useState(false);
-  const [breakNum, setBreakNum] = useState(null);
-  const [initList, setInitList] = useState([]);
+  const [breakNum, setBreakNum] = useState(0);
   const [firstList, setFirstList] = useState([]);
   const [mainLeft, setMainLeft] = useState([]);
   const [mainRight, setMainRight] = useState([]);
@@ -56,11 +55,23 @@ export function Merge() {
   const [isRight, setIsRight] = useState(false);
   const [nestedStep, setNestedStep] = useState(0);
   const [score, setScore] = useState(0);
-  const [numToCompare, setNumToCompare] = useState(0);
   const [show, setShow] = useState(false);
   const [nestBreakDialog, setNestBreakDialog] = useState(false);
   const [showConsole, setShowConsole] = useState(false);
   const [chooseNums, setChooseNums] = useState([]);
+  const [startMerge, setStartMerge] = useState(false);
+  const [dragArray, setDragArray] = useState([]);
+  const [highlightDrag, setHighlightDrag] = useState(0);
+  const [highlightLeft, setHighlightLeft] = useState(0);
+  const [highlightRight, setHighlightRight] = useState(0);
+  const [draggedNum, setDraggedNum] = useState({ side: '', number: null });
+  const [isFurtherLeft, setIsFurtherLeft] = useState(false);
+  const [isFurtherRight, setIsFurtherRight] = useState(false);
+  const [isLeftRight,setIsLeftRight] = useState(false);
+  // const [isFurtherLeftSorted, setIsFurtherLeftSorted] = useState(false);
+  // const [isFurtherRightSorted, setIsFurtherRightSorted] = useState(false);
+
+
 
   function firstListGenerator(number) {
     console.log('level name: ' + levelName);
@@ -121,11 +132,19 @@ export function Merge() {
       )
     )
   }
-  function listItemsDivided(list, showGreen) {
+  function listItemsDivided(list, showGreen, hlit, key, text) {
+    // console.log('key: ' + typeof parseInt(key));
+    // console.log('nestedStep type: ' + typeof nestedStep);
+    // console.log('nestedStep: ' + nestedStep);
+    // console.log('parse key: ' + parseInt(key));
+    // console.log('text: ' + text);
+    if (Object.keys(list).length <= 0) return;
     return (
       list.map((number, i) =>
         <div style={{ marginLeft: 20, marginTop: 20 }}><Button
-          style={{ backgroundColor: !showGreen ? 'grey' : 'green' }} key={i} >{number}</Button></div>
+          draggable={hlit === i && parseInt(key) === nestedStep && startMerge ? true : false}
+          onDragStart={(e) => setDraggedNum({ side: text, number: number })}
+          style={{ backgroundColor: !showGreen ? 'grey' : hlit === i && parseInt(key) === nestedStep && startMerge ? 'red' : 'green' }} key={i} >{number}</Button></div>
       )
     )
   }
@@ -138,7 +157,7 @@ export function Merge() {
     let it = s.values();
     const randomArrayRedo = Array.from(it);
     setChooseNums(randomArrayRedo);
-    setInitList(randomArrayRedo);
+    // setInitList(randomArrayRedo);
   }
 
   function startSorting() {
@@ -148,7 +167,7 @@ export function Merge() {
       } else {
         setIsFirstListSet(true);
         setBreakDialog(true);
-        setNumToCompare(firstList.length);
+        // setNumToCompare(firstList.length);
       }
     } else if (levelName === 'medium') {
       if (firstList.length < 8) {
@@ -156,7 +175,7 @@ export function Merge() {
       } else {
         setIsFirstListSet(true);
         setBreakDialog(true);
-        setNumToCompare(firstList.length);
+        //  setNumToCompare(firstList.length);
       }
     } else if (levelName === 'hard') {
       if (firstList.length < 10) {
@@ -164,13 +183,31 @@ export function Merge() {
       } else {
         setIsFirstListSet(true);
         setBreakDialog(true);
-        setNumToCompare(firstList.length);
+        //  setNumToCompare(firstList.length);
       }
     }
 
   }
-  console.log(nestedLeft);
+
+  function dragCreate(count) {
+    // console.log('nestedStep: ' + nestedStep);
+    // console.log('isLeft: ' + isLeft);
+    // console.log(nestedLeft);
+    // console.log(nestedLeft.right[nestedStep]);
+    // let count = leftArr.length + rightArr.length;
+    // console.log('count: ' + count);
+    let dragBoxes = Array.from(Array(count).keys());
+    //console.log('dragBoxes: ' + dragBoxes);
+    let dragArr = dragBoxes.map(newId => { return { index: newId, number: 0 } });
+    console.log('dragArr: ' + dragArr);
+    setDragArray(dragArr);
+  }
+
+
   //nestedLeft.map((item, i) => console.log('item: ' + item));
+  console.log('nestedstep out: ' + nestedStep)
+  console.log(nestedLeft);
+  console.log('draggedNum: ' + draggedNum);
   return (
     <div>
       <NavigationBar showConsole={(show) => setShowConsole(show)} />
@@ -202,7 +239,7 @@ export function Merge() {
               <div>
                 {isLeft &&
                   Object.keys(nestedLeft.left).map(keyleft =>
-                    <div><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>{listItemsDivided(nestedLeft.left[keyleft], true)}</span></div>
+                    <div><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>{listItemsDivided(nestedLeft.left[keyleft], true, highlightLeft, keyleft, 'left')}</span></div>
                   )
 
 
@@ -214,23 +251,41 @@ export function Merge() {
                 {isLeft &&
                   Object.keys(nestedLeft.right).map(keyright =>
                     <div><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>
-                     <img src={pipe} width='50' />
-                      {listItemsDivided(nestedLeft.right[keyright], true)}</span></div>
+                      {nestedLeft.right[keyright].length > 0 && <img src={pipe} width='50' />}
+                      {listItemsDivided(nestedLeft.right[keyright], true, highlightRight, keyright, 'right')}</span></div>
                   )
 
 
                 }
               </div>
             </div>
-            {/* <GridWrapper>
-            {isLeft &&
-              Object.keys(nestedLeft.left).map(keyleft =>
-                <GridWrapper2><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>{listItemsDivided(nestedLeft.left[keyleft], true)}</span></GridWrapper2>
-              )
+            <GridWrapper>
+              <GridWrapper>
+                {startMerge &&
+                  dragArray.map((item, i, arr) => <div style={{ alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+                    <div
+                      onDrop={e => handleDrop(e)}
+                      onDragOver={e => handleDragOver(e)}
+                      onDragEnter={e => handleDragEnter(e)}
+                      onDragLeave={e => handleDragLeave(e)}
+                      style={
+                        {
+                          display: 'flex',
+                          backgroundColor: highlightDrag === i ? 'red' : '#cdcdcd',
+                          color: 'black',
+                          width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center'
+                        }
+                      }>
+                      {item.number}
+                    </div>
+                    <br />
+                    <span style={{ marginLeft: 20, fontWeight: 'bold' }}>{item.index}</span>
 
+                  </div>)}
 
-            }
-            </GridWrapper> */}
+              </GridWrapper>
+
+            </GridWrapper>
 
             {!isFirstListSet && <div style={styles.swapDiv}>
               <Button onClick={() => startSorting()} style={styles.startBtn} >Start Sorting</Button>
@@ -262,12 +317,13 @@ export function Merge() {
           </Popup>
           <Modal show={show}>
             <Modal.Header closeButton>
-              <Modal.Title>Wrong Move</Modal.Title>
+              <Modal.Title>Corrct..!!</Modal.Title>
             </Modal.Header>
             <Modal.Body>Well Done! Let's start with left side first</Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={() => {
                 setShow(false);
+                setBreakDialog(false);
                 setNestBreakDialog(true);
               }}>
                 OK
@@ -287,62 +343,166 @@ export function Merge() {
   function innerDivision(event) {
     //console.log(Object.keys(nestedLeft));
     // setNestedLeft({ ...nestedLeft, [nestedStep]: left });
-    if (Object.keys(nestedLeft.left).length > 0) {
-      event.preventDefault();
-      let test = Object.keys(nestedLeft.left).map(key => { return nestedLeft.left[key] });
-      console.log('test: ' + test.length);
-      let listToBreak = test[nestedStep - 1];
-      console.log('listToBreak: ' + listToBreak);
-      console.log('test0 length' + listToBreak.length);
-      if (listToBreak.length > 1) {
-        let mid = Math.floor(test[0].length / 2);
-        console.log('mid: ' + mid);
-        let leftArr = test[0].slice(0, mid)
-        let rightArr = test[0].slice(mid);
+    if (isFurtherLeft) {
+      if (Object.keys(nestedLeft.left).length > 0) {
+        event.preventDefault();
+        let test = Object.keys(nestedLeft.left).map(key => { return nestedLeft.left[key] });
+        console.log( test);
+        let listToBreak = test[nestedStep - 1];
+        console.log('listToBreak: ' + listToBreak);
+        //console.log('test0 length' + listToBreak.length);
+        if (listToBreak.length > 1) {
+          let mid = Math.floor(test[0].length / 2);
+          //console.log('mid: ' + mid);
+          let leftArr = test[0].slice(0, mid)
+          let rightArr = test[0].slice(mid);
+          //console.log('left: ' + leftArr);
+          //console.log('right: ' + rightArr);
+          if (leftArr.length === 1 && rightArr.length === 1) {
+            console.log('set break dialog false here');
+            setNestBreakDialog(false);
+            setStartMerge(true);
+            dragCreate(leftArr.length+rightArr.length)
+          } else {
+            setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+            setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+            setNestedStep(nestedStep + 1);
+          }
+
+          // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+          //console.log('nestedstep befor set:' + nestedStep)
+
+          //console.log('nestedstep after set:' + nestedStep)
+          //console.log('leftarray length: ' + leftArr.length);
+          //console.log('rightArr length: ' + rightArr.length);
+
+        } else {
+          setIsLeftRight(true);
+          let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
+          console.log('test: ' + test.length);
+          let listToBreak = test[nestedStep - 1];
+          console.log('listToBreak: ' + listToBreak);
+          console.log('test0 length' + listToBreak.length);
+          if (listToBreak.length > 1) {
+            let mid = Math.floor(test[0].length / 2);
+            console.log('mid: ' + mid);
+            let leftArr = test[0].slice(0, mid)
+            let rightArr = test[0].slice(mid);
+            console.log('left: ' + leftArr);
+            console.log('right: ' + rightArr);
+            setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+            setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+            // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+
+            if (leftArr.length == 1 && rightArr.length == 1) {
+              console.log('set break dialog false here');
+              setNestBreakDialog(false);
+              setStartMerge(true);
+              dragCreate(leftArr.length+rightArr.length)
+            } else if (leftArr.length == 1 && rightArr.length > 1) {
+              console.log('divide right array further');
+            } else {
+              setNestedStep(nestedStep + 1);
+            }
+          }
+        }
+        // let mid = Math.floor(listToBreak.length / 2);
+        // console.log('mid: ' + listToBreak[mid])
+      } else {
+        console.log('no objects');
+        let mid = Math.floor(mainLeft.length / 2);
+        let leftArr = mainLeft.slice(0, mid)
+        let rightArr = mainLeft.slice(mid);
         console.log('left: ' + leftArr);
         console.log('right: ' + rightArr);
         setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
         setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
-        // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
-        setNestedStep(nestedStep + 1);
-        if(leftArr.length == 1 && rightArr.length == 1){
-         setBreakDialog(false);
-        }
-      }else{
-        let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
-      console.log('test: ' + test.length);
-      let listToBreak = test[nestedStep - 1];
-      console.log('listToBreak: ' + listToBreak);
-      console.log('test0 length' + listToBreak.length);
-      if (listToBreak.length > 1) {
-        let mid = Math.floor(test[0].length / 2);
-        console.log('mid: ' + mid);
-        let leftArr = test[0].slice(0, mid)
-        let rightArr = test[0].slice(mid);
-        console.log('left: ' + leftArr);
-        console.log('right: ' + rightArr);
-        setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
-        setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
-        // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
-        setNestedStep(nestedStep + 1);
-        if(leftArr.length == 1 && rightArr.length == 1){
-         setBreakDialog(false);
-        }
+        //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+        setNestedStep(nestedStep + 1)
       }
-    }
-      // let mid = Math.floor(listToBreak.length / 2);
-      // console.log('mid: ' + listToBreak[mid])
+      //FURTHER RIGHT SIDE WORKS ARE HERE
     } else {
-      console.log('no objects');
-      let mid = Math.floor(mainLeft.length / 2);
-      let leftArr = mainLeft.slice(0, mid)
-      let rightArr = mainLeft.slice(mid);
-      console.log('left: ' + leftArr);
-      console.log('right: ' + rightArr);
-      setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
-      setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
-      //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
-      setNestedStep(nestedStep + 1)
+      console.log('let us work with right side');
+      if (Object.keys(nestedLeft.right).length > 0) {
+        event.preventDefault();
+        let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
+        console.log('test: ' + test.length);
+        let listToBreak = test[nestedStep - 1];
+        console.log('listToBreak: ' + listToBreak);
+        console.log('test0 length' + listToBreak.length);
+        if (listToBreak.length > 1) {
+          let mid = Math.floor(test[0].length / 2);
+          console.log('mid: ' + mid);
+          let leftArr = test[0].slice(0, mid)
+          let rightArr = test[0].slice(mid);
+          console.log('left: ' + leftArr);
+          console.log('right: ' + rightArr);
+          console.log('nestedstep befor set:' + nestedStep)
+
+          console.log('nestedstep after set:' + nestedStep)
+          console.log('leftarray length: ' + leftArr.length);
+          console.log('rightArr length: ' + rightArr.length);
+          if (leftArr.length === 1 && rightArr.length === 1) {
+            console.log('set break dialog false here');
+            setNestBreakDialog(false);
+            setStartMerge(true);
+            dragCreate(leftArr.length + rightArr.length)
+          } else if (leftArr.length == 1 && rightArr.length > 1) {
+            console.log('divide right array further fpr further right');
+            // let innerLeft = [rightArr[0]];
+            // let innerRight = [rightArr[1]];
+            // setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep+1]: innerLeft } }));
+            // setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep+1]: innerRight } }));
+            // console.log(innerRight);
+            setNestedStep(nestedStep + 1);
+          } else {
+            setNestedStep(nestedStep + 1);
+          }
+          setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+          setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+          // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+
+        } else {
+          // let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
+          // console.log('test: ' + test.length);
+          // let listToBreak = test[nestedStep - 1];
+          // console.log('listToBreak: ' + listToBreak);
+          // console.log('test0 length' + listToBreak.length);
+          // if (listToBreak.length > 1) {
+          //   let mid = Math.floor(test[0].length / 2);
+          //   console.log('mid: ' + mid);
+          //   let leftArr = test[0].slice(0, mid)
+          //   let rightArr = test[0].slice(mid);
+          //   console.log('left: ' + leftArr);
+          //   console.log('right: ' + rightArr);
+          //   setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+          //   setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+          //   // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+
+          //   if (leftArr.length == 1 && rightArr.length == 1) {
+          //     console.log('set break dialog false here');
+          //     setNestBreakDialog(false);
+          //     setStartMerge(true);
+          //     dragCreate()
+          //   } else {
+          //     setNestedStep(nestedStep + 1);
+          //   }
+          // }
+        }
+        // let mid = Math.floor(listToBreak.length / 2);
+        // console.log('mid: ' + listToBreak[mid])
+      } else {
+        console.log('no objects');
+        let mid = Math.floor(mainLeft.length / 2);
+        let leftArr = mainLeft.slice(0, mid)
+        let rightArr = mainLeft.slice(mid);
+        console.log('left: ' + leftArr);
+        console.log('right: ' + rightArr);
+        setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+        setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+        //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+        setNestedStep(nestedStep + 1)
+      }
     }
 
     event.preventDefault();
@@ -350,18 +510,21 @@ export function Merge() {
 
   function formSubmit(event) {
     let mid = Math.floor(firstList.length / 2);
-    console.log('mic: ' + mid);
+    console.log('mic: ' + firstList[mid]);
+    console.log('mic: ' + breakNum);
     if (firstList[mid] === breakNum) {
       console.log('this is correct');
       setScore(score + 1)
       let left = firstList.slice(0, mid)
       let right = firstList.slice(mid);
+      console.log(mainLeft.length)
       if (mainLeft.length === 0) {
         setMainLeft(left);
         setMainRight(right);
         setBreakDialog(false);
         setShow(true);
         setIsLeft(true);
+        setIsFurtherLeft(true)
         //setNestedStep(nestedStep + 1);
 
       }
@@ -372,6 +535,128 @@ export function Merge() {
     }
 
     event.preventDefault();
+  }
+
+  function handleDrop(e, index) {
+    let myArray = [];
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log(draggedNum)
+    // console.log(nestedLeft.left[nestedStep][0]);
+    nestedLeft.left[nestedStep].map(item => myArray.push(item))
+    nestedLeft.right[nestedStep].map(item => myArray.push(item))
+    let mySorted = myArray.sort(function (a, b) { return a - b });
+    console.log('mysorted: ' + mySorted);
+    console.log('dragged number:' + draggedNum.number);
+    //console.log(draggedNum.side);
+    console.log('highlight left: ' + highlightLeft);
+    console.log('highlight right: ' + highlightRight);
+    console.log('highlight drag: ' + highlightDrag);
+    console.log('mysorted highlight: ' + mySorted[highlightDrag]);
+    if (draggedNum.number === mySorted[highlightDrag]) {
+      dragArray[highlightDrag].number = draggedNum.number;
+      setDragArray(dragArray)
+
+      setDragArray(dragArray.map(item => {
+        if (item.index !== highlightDrag) return item
+        return { ...item, number: draggedNum.number }
+      }));
+      setHighlightDrag(highlightDrag + 1)
+      if (draggedNum.side === 'left') {
+        setHighlightLeft(highlightLeft + 1);
+      } else {
+        setHighlightRight(highlightRight + 1)
+      }
+      console.log('highlightDrag: ' + highlightDrag);
+      if (highlightDrag + 1 === mySorted.length && !isFurtherRight) {
+        console.log(dragArray)
+        let newSorted = dragArray.map(drg => drg.number);
+        console.log('newSorted: ' + newSorted);
+        console.log('draggedNum.side: ' + draggedNum.side);
+        //if(draggedNum.side === 'left'){
+        setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: {} } }));
+        setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: {} } }));
+        if (isFurtherLeft) {
+          if(levelName==='easy'){
+            if(nestedStep === 0){
+             setMainLeft([]);
+             setMainLeft(newSorted);
+             setIsFurtherRight(true);
+            setIsFurtherLeft(false)
+            setNestBreakDialog(true);
+            setDragArray([]);
+            setHighlightDrag(0);
+            setHighlightLeft(0);
+            setHighlightRight(0);
+            setStartMerge(false);
+             setDraggedNum({side: '',number : null})
+             setIsRight(true);
+             setIsLeft(false)
+            }else{
+              setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
+            }
+            
+          }else{
+            setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep - 1]: newSorted } }));
+          }
+          
+        } else {
+          setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
+        }
+
+        console.log('nestedstep after sort: ' + nestedStep);
+        if (nestedStep === 1 && isFurtherLeft) {
+          if(levelName==='easy'){
+             setNestedStep(nestedStep-1);
+             setHighlightDrag(0);
+            setHighlightLeft(0);
+            setHighlightRight(0);
+            setDragArray([]);
+            dragCreate(3)
+          }else{
+            setIsFurtherRight(true);
+            setIsFurtherLeft(false)
+            setNestBreakDialog(true);
+            setDragArray([]);
+            setHighlightDrag(0);
+            setHighlightLeft(0);
+            setHighlightRight(0);
+            setStartMerge(false);
+             setDraggedNum({side: '',number : null})
+          }
+         
+        } else {
+          console.log('do this logic')
+        }
+        // setNestedStep(nestedStep-1)
+        // setHighlightDrag(0);
+        // setHighlightLeft(0);
+        // setHighlightRight(0);
+        //}
+
+        // setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+        console.log(nestedLeft)
+        console.log('remove nestedstep items and replace previous nestedstep');
+      }
+      // dragArray[highlightDrag].number = draggedNum.number;
+      // setDragArray(prevArray=>[...prevArray,dragArray])
+    }
+
+  };
+  function handleDragEnter(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log('e on dragEnter: ' + e);
+  };
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log('e on dragLeave: ' + e);
+  };
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log('e on dragOver: ' + e);
   }
 }
 
