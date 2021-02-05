@@ -50,7 +50,7 @@ export function Merge() {
   const [mainLeft, setMainLeft] = useState([]);
   const [mainRight, setMainRight] = useState([]);
   const [nestedLeft, setNestedLeft] = useState({ left: {}, right: {} });
-  const [nestedRight, setNestedRight] = useState({});
+  const [nestedRight, setNestedRight] = useState({ left: {}, right: {} });
   const [isLeft, setIsLeft] = useState(false);
   const [isRight, setIsRight] = useState(false);
   const [nestedStep, setNestedStep] = useState(0);
@@ -207,6 +207,7 @@ export function Merge() {
   //nestedLeft.map((item, i) => console.log('item: ' + item));
   console.log('nestedstep out: ' + nestedStep)
   console.log(nestedLeft);
+  console.log(nestedRight);
   console.log('draggedNum: ' + draggedNum);
   return (
     <div>
@@ -244,6 +245,14 @@ export function Merge() {
 
 
                 }
+                {isRight &&
+                  Object.keys(nestedRight.left).map(keyleft =>
+                    <div><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>{listItemsDivided(nestedRight.left[keyleft], true, highlightLeft, keyleft, 'left')}</span></div>
+                  )
+
+
+                }
+
 
               </div>
 
@@ -257,6 +266,16 @@ export function Merge() {
 
 
                 }
+                {isRight &&
+                  Object.keys(nestedRight.right).map(keyright =>
+                    <div><span style={{ color: 'black', display: 'flex', flexDirection: 'row' }}>
+                      {nestedRight.right[keyright].length > 0 && <img src={pipe} width='50' />}
+                      {listItemsDivided(nestedRight.right[keyright], true, highlightRight, keyright, 'right')}</span></div>
+                  )
+
+
+                }
+                
               </div>
             </div>
             <GridWrapper>
@@ -422,84 +441,83 @@ export function Merge() {
       }
       //FURTHER RIGHT SIDE WORKS ARE HERE
     } else {
-      console.log('let us work with right side');
-      if (Object.keys(nestedLeft.right).length > 0) {
+      console.log(Object.keys(nestedRight.left).length);
+      if(Object.keys(nestedRight.left).length > 0){
         event.preventDefault();
-        let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
-        console.log('test: ' + test.length);
+        let test = Object.keys(nestedRight.left).map(key => { return nestedRight.left[key] });
+        console.log( test);
         let listToBreak = test[nestedStep - 1];
         console.log('listToBreak: ' + listToBreak);
-        console.log('test0 length' + listToBreak.length);
+        //console.log('test0 length' + listToBreak.length);
+        console.log('nestedStep: '+nestedStep)
+        //return;
         if (listToBreak.length > 1) {
           let mid = Math.floor(test[0].length / 2);
-          console.log('mid: ' + mid);
+          //console.log('mid: ' + mid);
           let leftArr = test[0].slice(0, mid)
           let rightArr = test[0].slice(mid);
-          console.log('left: ' + leftArr);
-          console.log('right: ' + rightArr);
-          console.log('nestedstep befor set:' + nestedStep)
-
-          console.log('nestedstep after set:' + nestedStep)
-          console.log('leftarray length: ' + leftArr.length);
-          console.log('rightArr length: ' + rightArr.length);
+          //console.log('left: ' + leftArr);
+          //console.log('right: ' + rightArr);
           if (leftArr.length === 1 && rightArr.length === 1) {
             console.log('set break dialog false here');
             setNestBreakDialog(false);
             setStartMerge(true);
-            dragCreate(leftArr.length + rightArr.length)
-          } else if (leftArr.length == 1 && rightArr.length > 1) {
-            console.log('divide right array further fpr further right');
-            // let innerLeft = [rightArr[0]];
-            // let innerRight = [rightArr[1]];
-            // setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep+1]: innerLeft } }));
-            // setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep+1]: innerRight } }));
-            // console.log(innerRight);
-            setNestedStep(nestedStep + 1);
+            dragCreate(leftArr.length+rightArr.length)
           } else {
+            setNestedRight((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+            setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
             setNestedStep(nestedStep + 1);
           }
-          setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
-          setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+
           // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+          //console.log('nestedstep befor set:' + nestedStep)
+
+          //console.log('nestedstep after set:' + nestedStep)
+          //console.log('leftarray length: ' + leftArr.length);
+          //console.log('rightArr length: ' + rightArr.length);
 
         } else {
-          // let test = Object.keys(nestedLeft.right).map(key => { return nestedLeft.right[key] });
-          // console.log('test: ' + test.length);
-          // let listToBreak = test[nestedStep - 1];
-          // console.log('listToBreak: ' + listToBreak);
-          // console.log('test0 length' + listToBreak.length);
-          // if (listToBreak.length > 1) {
-          //   let mid = Math.floor(test[0].length / 2);
-          //   console.log('mid: ' + mid);
-          //   let leftArr = test[0].slice(0, mid)
-          //   let rightArr = test[0].slice(mid);
-          //   console.log('left: ' + leftArr);
-          //   console.log('right: ' + rightArr);
-          //   setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
-          //   setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
-          //   // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
+          setIsLeftRight(true);
+          let test = Object.keys(nestedRight.right).map(key => { return nestedRight.right[key] });
+          console.log('test: ' + test.length);
+          let listToBreak = test[nestedStep - 1];
+          console.log('listToBreak: ' + listToBreak);
+          console.log('test0 length' + listToBreak.length);
+          if (listToBreak.length > 1) {
+            let mid = Math.floor(test[0].length / 2);
+            console.log('mid: ' + mid);
+            let leftArr = test[0].slice(0, mid)
+            let rightArr = test[0].slice(mid);
+            console.log('left: ' + leftArr);
+            console.log('right: ' + rightArr);
+            setNestedRight((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+            setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+            // //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
 
-          //   if (leftArr.length == 1 && rightArr.length == 1) {
-          //     console.log('set break dialog false here');
-          //     setNestBreakDialog(false);
-          //     setStartMerge(true);
-          //     dragCreate()
-          //   } else {
-          //     setNestedStep(nestedStep + 1);
-          //   }
-          // }
+            if (leftArr.length == 1 && rightArr.length == 1) {
+              console.log('set break dialog false here');
+              setNestBreakDialog(false);
+              setStartMerge(true);
+              dragCreate(leftArr.length+rightArr.length)
+            } else if (leftArr.length == 1 && rightArr.length > 1) {
+              console.log('divide right array further');
+            } else {
+              setNestedStep(nestedStep + 1);
+            }
+          }
         }
-        // let mid = Math.floor(listToBreak.length / 2);
-        // console.log('mid: ' + listToBreak[mid])
-      } else {
+      }else{
+        event.preventDefault();
         console.log('no objects');
-        let mid = Math.floor(mainLeft.length / 2);
-        let leftArr = mainLeft.slice(0, mid)
-        let rightArr = mainLeft.slice(mid);
+        console.log('nested step first time right: '+nestedStep)
+        let mid = Math.floor(mainRight.length / 2);
+        let leftArr = mainRight.slice(0, mid)
+        let rightArr = mainRight.slice(mid);
         console.log('left: ' + leftArr);
         console.log('right: ' + rightArr);
-        setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
-        setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
+        console.log('nestedStep: '+nestedStep);
+        setNestedRight((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: leftArr } }));
+        setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: rightArr } }));
         //setNestedLeft({ ...nestedLeft, left: {[nestedStep]: leftArr}});
         setNestedStep(nestedStep + 1)
       }
@@ -543,8 +561,14 @@ export function Merge() {
     e.stopPropagation();
     // console.log(draggedNum)
     // console.log(nestedLeft.left[nestedStep][0]);
-    nestedLeft.left[nestedStep].map(item => myArray.push(item))
-    nestedLeft.right[nestedStep].map(item => myArray.push(item))
+    if(isFurtherLeft){
+      nestedLeft.left[nestedStep].map(item => myArray.push(item))
+      nestedLeft.right[nestedStep].map(item => myArray.push(item))
+    }else{
+      nestedRight.left[nestedStep].map(item => myArray.push(item))
+      nestedRight.right[nestedStep].map(item => myArray.push(item))
+    }
+   
     let mySorted = myArray.sort(function (a, b) { return a - b });
     console.log('mysorted: ' + mySorted);
     console.log('dragged number:' + draggedNum.number);
@@ -568,14 +592,20 @@ export function Merge() {
         setHighlightRight(highlightRight + 1)
       }
       console.log('highlightDrag: ' + highlightDrag);
-      if (highlightDrag + 1 === mySorted.length && !isFurtherRight) {
+      if (highlightDrag + 1 === mySorted.length ) {
         console.log(dragArray)
         let newSorted = dragArray.map(drg => drg.number);
         console.log('newSorted: ' + newSorted);
         console.log('draggedNum.side: ' + draggedNum.side);
         //if(draggedNum.side === 'left'){
-        setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: {} } }));
-        setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: {} } }));
+          if(isFurtherLeft){
+            setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: {} } }));
+            setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: {} } }));
+          }else{
+            setNestedRight((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep]: {} } }));
+            setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep]: {} } }));
+          }
+        
         if (isFurtherLeft) {
           if(levelName==='easy'){
             if(nestedStep === 0){
@@ -589,6 +619,9 @@ export function Merge() {
             setHighlightLeft(0);
             setHighlightRight(0);
             setStartMerge(false);
+            if(!nestedStep-1 === -1){
+              setNestedStep(nestedStep-1);
+            }
              setDraggedNum({side: '',number : null})
              setIsRight(true);
              setIsLeft(false)
@@ -600,14 +633,44 @@ export function Merge() {
             setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep - 1]: newSorted } }));
           }
           
+        }else if(isFurtherRight){
+          if(levelName==='easy'){
+            if(nestedStep === 0){
+             setMainRight([]);
+             setMainRight(newSorted);
+             setIsFurtherRight(false);
+            setIsFurtherLeft(false)
+            setDragArray([]);
+            dragCreate(6);
+            setHighlightDrag(0);
+            setHighlightLeft(0);
+            setHighlightRight(0);
+            //setStartMerge(false);
+            if(!nestedStep-1 === -1){
+              setNestedStep(nestedStep-1);
+            }
+             setDraggedNum({side: '',number : null})
+             setIsRight(false);
+             setIsLeft(false)
+            }else{
+
+              setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
+            }
+            
+          }else{
+            setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep - 1]: newSorted } }));
+          }
         } else {
           setNestedLeft((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
         }
 
         console.log('nestedstep after sort: ' + nestedStep);
-        if (nestedStep === 1 && isFurtherLeft) {
+        if (nestedStep === 1) {
           if(levelName==='easy'){
-             setNestedStep(nestedStep-1);
+            if(!nestedStep-1 === -1){
+              setNestedStep(nestedStep-1);
+            }
+            
              setHighlightDrag(0);
             setHighlightLeft(0);
             setHighlightRight(0);
@@ -620,6 +683,7 @@ export function Merge() {
             setDragArray([]);
             setHighlightDrag(0);
             setHighlightLeft(0);
+            setNestedStep(nestedStep-1)
             setHighlightRight(0);
             setStartMerge(false);
              setDraggedNum({side: '',number : null})
