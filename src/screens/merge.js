@@ -203,14 +203,7 @@ export function Merge() {
   }
 
   function dragCreate(count) {
-    // console.log('nestedStep: ' + nestedStep);
-    // console.log('isLeft: ' + isLeft);
-    // console.log(nestedLeft);
-    // console.log(nestedLeft.right[nestedStep]);
-    // let count = leftArr.length + rightArr.length;
-    // console.log('count: ' + count);
     let dragBoxes = Array.from(Array(count).keys());
-    //console.log('dragBoxes: ' + dragBoxes);
     let dragArr = dragBoxes.map(newId => { return { index: newId, number: 0 } });
     console.log('dragArr: ' + dragArr);
     setDragArray(dragArr);
@@ -233,7 +226,6 @@ export function Merge() {
           <GridWrapper>
             {!isLevel && <Button onClick={() => generateChooseList('easy')} variant="primary">Easy</Button>}{' '}
             {!isLevel && <Button onClick={() => generateChooseList('medium')} variant="secondary">Medium</Button>}{' '}
-            {!isLevel && <Button onClick={() => generateChooseList('hard')} variant="success">Hard</Button>}{' '}
 
           </GridWrapper>
 
@@ -376,17 +368,17 @@ export function Merge() {
     // console.log('isFurtherRight: ' + isFurtherRight);
     // console.log(Object.keys(nestedLeft.left).length);
     // console.log(nestedLeft.left[nestedStep - 1]);
-    console.log('isFinalSort: '+isFinalSort)
+    console.log('isFinalSort: ' + isFinalSort)
     console.log(nestedRight)
     console.log(dragArray)
-   
+
     //let mapdragZero = dragArray.filter(drag => drag.number)
     // let doShowMid = true;
     let leftFunc = false;
     let rightFunc = false;
     let arrayLength = 0, mid = 0;
     let leftArr = [], rightArr = [];
-    if(isFinalSort){
+    if (isFinalSort) {
       arrayLength = mainLeft.length + mainLeft.length
       console.log(mainLeft)
       mid = Math.floor(arrayLength / 2)
@@ -395,95 +387,176 @@ export function Merge() {
       // mid = Math.floor(firstList.length / 2)
       // leftArr = firstList.slice(0, mid)
       // rightArr = firstList.slice(mid)
-    }else{
-
-    if (!Object.keys(nestedLeft.left).length > 0) {
-      arrayLength = firstList.length
-      mid = Math.floor(firstList.length / 2)
-      leftArr = firstList.slice(0, mid)
-      rightArr = firstList.slice(mid)
     } else {
-      if (levelName === 'easy') {
-        // console.log('checking inside level:' + nestedLeft.left[nestedStep].length);
-        if (isFurtherLeft) {
-          console.log('nestedStep easy level left:' + nestedStep);
-          if (nestedStep == 1 && Object.keys(nestedLeft.left).length === 1) {
-            // doShowMid = false
-            arrayLength = nestedLeft.left[nestedStep - 1].length
-            mid = 0;
-            leftArr = [];
-            rightArr = [];
-            rightFunc = false;
-            leftFunc = true;
-            rightFunc = false;
-          } else {
-            //doShowMid = true;
-            if (nestedStep != 0) {
-              arrayLength = nestedLeft.right[nestedStep - 1].length
-              mid = Math.floor(arrayLength / 2)
-              leftArr = nestedLeft.right[nestedStep - 1].slice(0, mid)
-              rightArr = nestedLeft.right[nestedStep - 1].slice(mid)
-              leftFunc = false;
-              rightFunc = true;
-            } else {
-              arrayLength = nestedLeft.left[nestedStep].length + nestedLeft.right[nestedStep].length
-              mid = Math.floor(arrayLength / 2)
-              leftArr = nestedLeft.left[nestedStep]
-              rightArr = nestedLeft.right[nestedStep]
-              leftFunc = false;
-              rightFunc = true;
-            }
 
-          }
-        } else if (isFurtherRight) {
-          console.log('we want to see nestedRight: ' + nestedRight);
-          if (!Object.keys(nestedRight.left).length > 0) {
-            rightFunc = true;
-            leftFunc = false;
-            console.log('set values here')
-            arrayLength = mainRight.length
-            mid = Math.floor(mainRight.length / 2)
-            leftArr = mainRight.slice(0, mid)
-            rightArr = mainRight.slice(mid)
-          } else {
-            console.log('length of nested Right: '+Object.keys(nestedRight.left).length);
-            console.log('nested step right else: '+nestedStep)
-            if (nestedStep == 1 && Object.keys(nestedRight.left).length === 1) {
-              arrayLength = nestedRight.left[nestedStep-1].length
+      if (!Object.keys(nestedLeft.left).length > 0) {
+        arrayLength = firstList.length
+        mid = Math.floor(firstList.length / 2)
+        leftArr = firstList.slice(0, mid)
+        rightArr = firstList.slice(mid)
+      } else {
+        if (levelName === 'easy') {
+          // console.log('checking inside level:' + nestedLeft.left[nestedStep].length);
+          if (isFurtherLeft) {
+            console.log('nestedStep easy level left:' + nestedStep);
+            if (nestedStep == 1 && Object.keys(nestedLeft.left).length === 1) {
+              // doShowMid = false
+              arrayLength = nestedLeft.left[nestedStep - 1].length
               mid = 0;
               leftArr = [];
               rightArr = [];
               rightFunc = false;
               leftFunc = true;
               rightFunc = false;
-            }else{
-              if(nestedStep == 1 && Object.keys(nestedRight.left).length === 2){
-                arrayLength = nestedRight.right[nestedStep - 1].length
+            } else {
+              //doShowMid = true;
+              if (nestedStep != 0) {
+                arrayLength = nestedLeft.right[nestedStep - 1].length
+                mid = Math.floor(arrayLength / 2)
+                leftArr = nestedLeft.right[nestedStep - 1].slice(0, mid)
+                rightArr = nestedLeft.right[nestedStep - 1].slice(mid)
+                leftFunc = false;
+                rightFunc = true;
+              } else {
+                arrayLength = nestedLeft.left[nestedStep].length + nestedLeft.right[nestedStep].length
+                mid = Math.floor(arrayLength / 2)
+                leftArr = nestedLeft.left[nestedStep]
+                rightArr = nestedLeft.right[nestedStep]
+                leftFunc = false;
+                rightFunc = true;
+              }
+
+            }
+          } else if (isFurtherRight) {
+            console.log('we want to see nestedRight: ' + nestedRight);
+            if (!Object.keys(nestedRight.left).length > 0) {
+              rightFunc = true;
+              leftFunc = false;
+              console.log('set values here')
+              arrayLength = mainRight.length
+              mid = Math.floor(mainRight.length / 2)
+              leftArr = mainRight.slice(0, mid)
+              rightArr = mainRight.slice(mid)
+            } else {
+              console.log('length of nested Right: ' + Object.keys(nestedRight.left).length);
+              console.log('nested step right else: ' + nestedStep)
+              if (nestedStep == 1 && Object.keys(nestedRight.left).length === 1) {
+                arrayLength = nestedRight.left[nestedStep - 1].length
+                mid = 0;
+                leftArr = [];
+                rightArr = [];
+                rightFunc = false;
+                leftFunc = true;
+                rightFunc = false;
+              } else {
+                if (nestedStep == 1 && Object.keys(nestedRight.left).length === 2) {
+                  arrayLength = nestedRight.right[nestedStep - 1].length
+                  mid = Math.floor(arrayLength / 2)
+                  leftArr = nestedRight.right[nestedStep - 1].slice(0, mid)
+                  rightArr = nestedRight.right[nestedStep - 1].slice(mid)
+                  leftFunc = false;
+                  rightFunc = true;
+                } else if (nestedStep == 0 && Object.keys(nestedRight.left).length === 2) {
+                  arrayLength = nestedRight.left[nestedStep].length + nestedRight.right[nestedStep].length
+                  mid = Math.floor(arrayLength / 2)
+                  leftArr = nestedRight.left[nestedStep]
+                  rightArr = nestedRight.right[nestedStep]
+                  leftFunc = false;
+                  rightFunc = true;
+                }
+              }
+            }
+
+
+            let myArray = leftArr.concat(rightArr);
+            let mySorted = myArray.sort(function (a, b) { return a - b });
+            //   leftArr = nestedLeft.right[nestedStep - 1].slice(0, mid)
+            // rightArr = nestedLeft.right[nestedStep - 1].slice(mid) 
+          }
+        } else if (levelName === 'medium') {
+          if (isFurtherLeft) {
+            console.log('nestedstep inside medium left: ' + nestedStep);
+            console.log('nestedLeft check lah');
+            console.log('startMerge :'+startMerge)
+             // console.log(nestedLeft)
+            if (nestedStep == 1 && Object.keys(nestedLeft.left).length === 1) {
+              
+              // doShowMid = false
+              arrayLength = nestedLeft.left[nestedStep - 1].length
               mid = Math.floor(arrayLength / 2)
-              leftArr = nestedRight.right[nestedStep - 1].slice(0, mid)
-              rightArr = nestedRight.right[nestedStep - 1].slice(mid)
+              leftArr = nestedLeft.left[nestedStep - 1].slice(0, mid)
+              rightArr = nestedLeft.left[nestedStep - 1].slice(mid)
+              leftFunc = true;
+              rightFunc = false;
+            } else if (nestedStep == 1 && Object.keys(nestedLeft.left).length === 2) {
+              console.log('i am in 2nd');
+              arrayLength = 2
+              mid = Math.floor(arrayLength / 2)
+              leftArr = nestedLeft.right[nestedStep-1].slice(0,mid)
+              rightArr = nestedLeft.right[nestedStep-1].slice(mid)
               leftFunc = false;
               rightFunc = true;
-              }else if(nestedStep == 0 && Object.keys(nestedRight.left).length === 2){
-              arrayLength = nestedRight.left[nestedStep].length + nestedRight.right[nestedStep].length
+            }else if(nestedStep === 0 && Object.keys(nestedLeft.left).length === 2){
+              console.log('i am in final step');
+              arrayLength = nestedLeft.left[nestedStep].length + nestedLeft.right[nestedStep].length
+              mid = Math.floor(arrayLength / 2)
+              leftArr = nestedLeft.left[nestedStep]
+              rightArr = nestedLeft.right[nestedStep]
+              leftFunc = true;
+              rightFunc = false;
+            }
+          }else if(isFurtherRight){
+            console.log('nestedstep inside medium left: ' + nestedStep);
+            console.log('nestedLeft check lah');
+            console.log(nestedRight)
+            console.log('startMerge :'+startMerge)
+            console.log(Object.keys(nestedRight.left).length)
+            if(nestedStep == 0){
+              if( Object.keys(nestedRight.left).length == 0){
+                arrayLength = mainRight.length
+                mid = Math.floor(arrayLength / 2)
+                leftArr = mainRight.slice(0,mid)
+                rightArr = mainRight.slice(mid)
+                leftFunc = true;
+                rightFunc = false;
+              }else if(Object.keys(nestedRight.left).length == 2){
+                console.log('4 item sorting right')
+                arrayLength = nestedRight.left[nestedStep].length + nestedRight.right[nestedStep].length
+                mid = Math.floor(arrayLength / 2)
+                leftArr = nestedRight.left[nestedStep]
+                rightArr =  nestedRight.right[nestedStep]
+                leftFunc = true;
+                rightFunc = false;
+              }
+              
+            }else if (nestedStep == 1 && Object.keys(nestedRight.left).length === 1) {
+              console.log('i am in 2nd');
+              console.log('nestedstep in second ' + nestedStep);
+              arrayLength = 2
+              mid = Math.floor(arrayLength / 2)
+              leftArr = nestedRight.left[nestedStep-1].slice(0,mid)
+              rightArr = nestedRight.left[nestedStep-1].slice(mid)
+              leftFunc = true;
+              rightFunc = false;
+            }else if(nestedStep == 1 && Object.keys(nestedRight.left).length === 2){
+              
+              if(nestedRight.left[1].length > 0){
+                console.log('i am in 3rd');
+                console.log('nestedstep in 3rd ' + nestedStep);
+                arrayLength = 2
               mid = Math.floor(arrayLength / 2)
               leftArr = nestedRight.left[nestedStep]
               rightArr = nestedRight.right[nestedStep]
-              leftFunc = false;
-              rightFunc = true;
+              leftFunc = true;
+              rightFunc = false;
+              }else{
+                console.log('empty just now')
               }
             }
           }
-          
-
-        let myArray = leftArr.concat(rightArr);
-        let mySorted = myArray.sort(function (a, b) { return a - b });
-        //   leftArr = nestedLeft.right[nestedStep - 1].slice(0, mid)
-        // rightArr = nestedLeft.right[nestedStep - 1].slice(mid) 
+        }
       }
     }
-  }
-}
 
     return (
       <div style={styles.consoleDiv}>
@@ -526,7 +599,7 @@ export function Merge() {
 </div> */}
           </div>}
           {/* For first while loop work on this view */}
-          {startMerge && <div style={styles.nestedForDiv}>
+          {(startMerge && dragArray.length > 0) && <div style={styles.nestedForDiv}>
 
             <div style={styles.whileText}>
               <span>i = j = k = 0</span>
@@ -552,7 +625,7 @@ export function Merge() {
             </div>
           </div>}
           {/* For 2nd while loop work on this view */}
-          {startMerge && (highlightLeft === leftArr.length || highlightRight === rightArr.length) && <div style={styles.nestedForDiv}>
+          {startMerge && dragArray.length > 0 && (highlightLeft === leftArr.length || highlightRight === rightArr.length) && <div style={styles.nestedForDiv}>
 
             <div style={styles.whileText}>
               <span> while i &lt; len(Left):</span>
@@ -574,7 +647,7 @@ export function Merge() {
           </div>}
 
           {/* For 3rd while loop work on this view */}
-          {startMerge && highlightLeft >= leftArr.length && <div style={styles.nestedForDiv}>
+          {startMerge && dragArray.length > 0 && highlightLeft >= leftArr.length && <div style={styles.nestedForDiv}>
 
             <div style={styles.whileText}>
               <span> while j &lt; len(Right):</span>
@@ -950,6 +1023,7 @@ export function Merge() {
                 setStartMerge(true)
               } else {
                 setNestedLeft((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep - 1]: newSorted } }));
+                setStartMerge(false)
               }
 
             }
@@ -980,6 +1054,7 @@ export function Merge() {
             } else {
 
               setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
+              setStartMerge(false)
             }
 
           } else if (levelName === 'medium') {
@@ -1005,13 +1080,16 @@ export function Merge() {
               setIsFinalSort(true);
               setIsLeftRight(false);
               setIsLeftRightDone(false);
+              //setStartMerge(false)
             } else {
+              // come back after check 526
               if (isLeftRightDone) {
                 setNestedRight((prevState) => ({ ...prevState, right: { ...prevState.right, [nestedStep - 1]: newSorted } }));
                 setNestedStep(nestedStep - 1);
-                setStartMerge(true)
+                //setStartMerge(true)
               } else {
                 setNestedRight((prevState) => ({ ...prevState, left: { ...prevState.left, [nestedStep - 1]: newSorted } }));
+                //setStartMerge(false)
               }
 
             }
